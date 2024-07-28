@@ -1,16 +1,42 @@
 ﻿@page "/counter"
+@using System.Net
+@using System.IO
 
 <h1>Counter</h1>
 
 <p>Current count: @currentCount</p>
+<p>getdata: @data</p>
 
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+<button class="btn btn-primary" @onclick="GetCSV">Click me</button>
 
 @code {
     private int currentCount = 0;
-
+    static string data = "";
     private void IncrementCount()
     {
         currentCount++;
     }
+
+    static async Task GetCSV()
+    {
+        try
+        {
+            HttpClient httpClient = new HttpClient();
+            HttpResponseMessage response = await httpClient.GetAsync("https://docs.google.com/spreadsheets/d/e/2PACX-1vTyU_CU6fB2slQTbn1TnO7prNhqH0DURYZ3_au52Tzy731toaj9zddwaOsqvKXvxUuSTwISArtK4Ar6/pub?output=csv");
+
+            if (response.IsSuccessStatusCode)
+            {
+                string content = await response.Content.ReadAsStringAsync();
+                // 處理回應內容
+                data = content;
+            }
+
+            
+        }
+        catch(Exception e)
+        {
+            Console.WriteLine(e);   
+        }
+    }
+  
 }
